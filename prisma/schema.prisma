@@ -1,0 +1,134 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  favorites Favorite[]
+  history   ViewHistory[]
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Player {
+  id         Int      @id @default(autoincrement())
+  nickname   String   @unique
+  accountId  String?  @unique
+  region     String   @default("eu")
+  avatar     String?
+  clanTag    String?
+  clanName   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  stats     Stats[]
+  matches   Match[]
+  favorites Favorite[]
+  history   ViewHistory[]
+
+  @@map("players")
+}
+
+model Stats {
+  id           Int      @id @default(autoincrement())
+  playerId     Int
+  battles      Int      @default(0)
+  wins         Int      @default(0)
+  losses       Int      @default(0)
+  winrate      Float    @default(0)
+  avgDamage    Float    @default(0)
+  avgXp        Float    @default(0)
+  wn8          Float    @default(0)
+  kills        Int      @default(0)
+  survivalRate Float    @default(0)
+  recordedAt   DateTime @default(now())
+
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@map("stats")
+}
+
+model Match {
+  id         Int      @id @default(autoincrement())
+  playerId   Int
+  tankId     String?
+  tankName   String?
+  result     String   // win / loss / draw
+  damage     Int      @default(0)
+  xp         Int      @default(0)
+  kills      Int      @default(0)
+  survived   Boolean  @default(false)
+  playedAt   DateTime @default(now())
+
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@map("matches")
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  playerId  Int
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, playerId])
+  @@map("favorites")
+}
+
+model ViewHistory {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  playerId  Int
+  viewedAt  DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@map("view_history")
+}
+
+model MetaStat {
+  id          Int      @id @default(autoincrement())
+  entityName  String
+  entityType  String   // tank / hero / weapon
+  winrate     Float    @default(0)
+  popularity  Float    @default(0)
+  avgDamage   Float    @default(0)
+  region      String   @default("global")
+  updatedAt   DateTime @updatedAt
+
+  @@map("meta_stats")
+}
+
+model ActivityLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  entity    String
+  entityId  String?
+  userId    Int?
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@map("activity_logs")
+}

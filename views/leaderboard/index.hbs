@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+{{> navbar}}
+<main class="container" style="padding-top:2rem">
+  <h1>🏆 Лідерборд</h1>
+
+  <!-- Filters -->
+  <form class="filters-bar" method="GET" action="/leaderboard">
+    <div class="filter-group">
+      <label>Регіон</label>
+      <select name="region" onchange="this.form.submit()">
+        <option value="all" {{#if (eq region "all")}}selected{{/if}}>Всі</option>
+        <option value="eu" {{#if (eq region "eu")}}selected{{/if}}>🇪🇺 EU</option>
+        <option value="na" {{#if (eq region "na")}}selected{{/if}}>🇺🇸 NA</option>
+        <option value="asia" {{#if (eq region "asia")}}selected{{/if}}>🌏 ASIA</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Сортування</label>
+      <select name="sort" onchange="this.form.submit()">
+        <option value="wn8" {{#if (eq sort "wn8")}}selected{{/if}}>WN8</option>
+        <option value="winrate" {{#if (eq sort "winrate")}}selected{{/if}}>Winrate</option>
+        <option value="damage" {{#if (eq sort "damage")}}selected{{/if}}>Дамаг</option>
+        <option value="battles" {{#if (eq sort "battles")}}selected{{/if}}>Кількість боїв</option>
+      </select>
+    </div>
+  </form>
+
+  <div class="leaderboard-grid">
+    <!-- Players table -->
+    <div class="table-card" style="flex:2">
+      <h2>👤 Топ Гравці</h2>
+      <table class="data-table leaderboard-table">
+        <thead>
+          <tr><th>Місце</th><th>Гравець</th><th>WN8</th><th>Winrate</th><th>Дамаг</th><th>Бої</th></tr>
+        </thead>
+        <tbody>
+          {{#each players}}
+          <tr class="{{#if (eq rank 1)}}rank-gold{{/if}}{{#if (eq rank 2)}}rank-silver{{/if}}{{#if (eq rank 3)}}rank-bronze{{/if}}">
+            <td class="rank-cell">
+              {{#if (eq rank 1)}}🥇{{else}}{{#if (eq rank 2)}}🥈{{else}}{{#if (eq rank 3)}}🥉{{else}}#{{rank}}{{/if}}{{/if}}{{/if}}
+            </td>
+            <td>
+              <a href="/players/{{id}}" class="link-player">{{nickname}}</a>
+              {{#if clanTag}}<span class="clan-tag-sm">{{clanTag}}</span>{{/if}}
+            </td>
+            <td style="color:{{wn8Color latestStats.wn8}}"><strong>{{toFixed latestStats.wn8 0}}</strong></td>
+            <td>{{toFixed latestStats.winrate 1}}%</td>
+            <td>{{toFixed latestStats.avgDamage 0}}</td>
+            <td>{{latestStats.battles}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Clans -->
+    <div class="table-card" style="flex:1">
+      <h2>🛡️ Топ Клани</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>#</th><th>Клан</th><th>WN8</th><th>WR%</th></tr>
+        </thead>
+        <tbody>
+          {{#each clans}}
+          <tr>
+            <td>#{{add @index 1}}</td>
+            <td><strong>{{tag}}</strong><br><small>{{name}}</small></td>
+            <td style="color:{{wn8Color avgWn8}}">{{toFixed avgWn8 0}}</td>
+            <td>{{toFixed avgWinrate 1}}%</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+{{> footer}}
+<script src="/js/app.js"></script>
+</body>
+</html>

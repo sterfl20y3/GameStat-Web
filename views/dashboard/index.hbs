@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+{{> navbar}}
+<main class="container" style="padding-top:2rem">
+  <div class="dashboard-header">
+    <div class="dash-avatar">{{substring user.username 0 2}}</div>
+    <div>
+      <h1>👤 {{user.username}}</h1>
+      <p class="text-muted">{{user.email}} · <span class="role-badge role-{{user.role}}">{{user.role}}</span></p>
+      <p class="text-muted">Зареєстрований: {{formatDate user.createdAt}}</p>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <!-- Favorites -->
+    <div class="dash-card">
+      <h2>⭐ Обрані гравці</h2>
+      {{#if favorites.length}}
+      <div class="fav-list">
+        {{#each favorites}}
+        <div class="fav-item">
+          <a href="/players/{{player.id}}" class="fav-name">{{player.nickname}}</a>
+          <span class="fav-region">{{regionFlag player.region}}</span>
+          {{#if player.stats.[0]}}
+          <span class="fav-wn8" style="color:{{wn8Color player.stats.[0].wn8}}">{{toFixed player.stats.[0].wn8 0}} WN8</span>
+          {{/if}}
+          <form action="/dashboard/unfavorite/{{player.id}}" method="POST" style="display:inline">
+            <button type="submit" class="btn-icon-del" title="Видалити">✕</button>
+          </form>
+        </div>
+        {{/each}}
+      </div>
+      {{else}}
+      <div class="empty-state">
+        <p>Поки що немає обраних гравців.</p>
+        <a href="/leaderboard" class="btn-outline">Знайти гравців</a>
+      </div>
+      {{/if}}
+    </div>
+
+    <!-- History -->
+    <div class="dash-card">
+      <h2>🕐 Нещодавно переглянуті</h2>
+      {{#if history.length}}
+      <div class="history-list">
+        {{#each history}}
+        <a href="/players/{{player.id}}" class="history-item">
+          <span class="hist-name">{{player.nickname}}</span>
+          <span class="hist-time">{{timeAgo viewedAt}}</span>
+        </a>
+        {{/each}}
+      </div>
+      {{else}}
+      <div class="empty-state">
+        <p>Ви ще нікого не переглядали.</p>
+        <a href="/" class="btn-outline">Пошук гравців</a>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+</main>
+{{> footer}}
+<script src="/js/app.js"></script>
+</body>
+</html>

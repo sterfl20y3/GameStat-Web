@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+{{> navbar}}
+<main class="container" style="padding-top:4rem;text-align:center">
+  <div class="not-found-card">
+    <div style="font-size:4rem">🔍</div>
+    <h1>Гравця не знайдено</h1>
+    <p>Гравець з нікнеймом <strong>«{{query}}»</strong> не знайдений в базі або API.</p>
+    <p>Перевір правильність написання і регіон.</p>
+    <a href="/" class="btn-primary" style="margin-top:1.5rem;display:inline-block">На головну</a>
+  </div>
+</main>
+{{> footer}}
+<script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+{{> navbar}}
+
+<main>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">⚡ GameStat</h1>
+      <p class="hero-subtitle">Аналізуй. Покращуй. Перемагай.</p>
+      <p class="hero-desc">Статистика гравців World of Tanks у реальному часі. Пошук, аналітика, лідерборди.</p>
+      <form class="hero-search" action="/players/search" method="GET">
+        <input type="text" name="q" placeholder="Введи нікнейм гравця..." class="hero-search-input" autofocus>
+        <select name="region" class="hero-region">
+          <option value="eu">🇪🇺 EU</option>
+          <option value="na">🇺🇸 NA</option>
+          <option value="asia">🌏 ASIA</option>
+        </select>
+        <button type="submit" class="btn-primary hero-search-btn">Знайти</button>
+      </form>
+    </div>
+    <div class="hero-bg"></div>
+  </section>
+
+  <!-- Stats bar -->
+  <section class="stats-bar">
+    <div class="stats-container">
+      <div class="stat-item">
+        <span class="stat-number">{{stats.totalPlayers}}</span>
+        <span class="stat-label">Гравців у базі</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{stats.totalUsers}}</span>
+        <span class="stat-label">Користувачів</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{stats.totalMatches}}</span>
+        <span class="stat-label">Боїв проаналізовано</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Top Players -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>🏆 Топ Гравці</h2>
+        <a href="/leaderboard" class="btn-outline">Переглянути всіх →</a>
+      </div>
+      <div class="players-grid">
+        {{#each topPlayers}}
+        <a href="/players/{{id}}" class="player-card">
+          <div class="player-rank">#{{add @index 1}}</div>
+          <div class="player-avatar">{{substring nickname 0 2}}</div>
+          <div class="player-info">
+            <div class="player-name">{{nickname}}</div>
+            {{#if clanTag}}<div class="player-clan">{{clanTag}}</div>{{/if}}
+            <div class="player-region">{{regionFlag region}} {{region}}</div>
+          </div>
+          {{#if latestStats}}
+          <div class="player-stats-mini">
+            <div class="mini-stat">
+              <span class="mini-val" style="color: {{wn8Color latestStats.wn8}}">{{toFixed latestStats.wn8 0}}</span>
+              <span class="mini-label">WN8</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-val">{{toFixed latestStats.winrate 1}}%</span>
+              <span class="mini-label">Перемоги</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-val">{{latestStats.battles}}</span>
+              <span class="mini-label">Боїв</span>
+            </div>
+          </div>
+          {{/if}}
+        </a>
+        {{/each}}
+      </div>
+    </div>
+  </section>
+
+  <!-- Meta preview -->
+  <section class="section section-dark">
+    <div class="container">
+      <div class="section-header">
+        <h2>📊 Поточна Мета</h2>
+        <a href="/meta" class="btn-outline">Детальніше →</a>
+      </div>
+      <div class="meta-grid">
+        {{#each topMeta}}
+        <div class="meta-card">
+          <div class="meta-icon">🛡️</div>
+          <div class="meta-name">{{entityName}}</div>
+          <div class="meta-stats">
+            <span class="meta-wr">{{toFixed winrate 1}}% WR</span>
+            <span class="meta-dmg">{{toFixed avgDamage 0}} dmg</span>
+          </div>
+          <div class="meta-bar">
+            <div class="meta-bar-fill" style="width: {{toFixed popularity 0}}%"></div>
+          </div>
+          <div class="meta-pop">Популярність: {{toFixed popularity 1}}%</div>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+  </section>
+</main>
+
+{{> footer}}
+<script src="/js/app.js"></script>
+</body>
+</html>

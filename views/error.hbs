@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+{{> navbar}}
+<main class="container" style="padding-top:4rem;text-align:center">
+  <div class="not-found-card">
+    <div style="font-size:5rem">{{#if (eq statusCode 404)}}🔍{{else}}{{#if (eq statusCode 403)}}🔒{{else}}💥{{/if}}{{/if}}</div>
+    <h1>{{statusCode}}</h1>
+    <p>{{message}}</p>
+    <a href="/" class="btn-primary" style="margin-top:1.5rem;display:inline-block">На головну</a>
+  </div>
+</main>
+{{> footer}}
+<script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+{{> navbar}}
+<div class="admin-layout">
+  {{> admin-sidebar}}
+  <main class="admin-main">
+    <h1>📋 Логи активності <span class="count-badge">{{total}}</span></h1>
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr><th>ID</th><th>Дія</th><th>Сутність</th><th>Entity ID</th><th>Деталі</th><th>Час</th></tr>
+        </thead>
+        <tbody>
+          {{#each logs}}
+          <tr>
+            <td>{{id}}</td>
+            <td><span class="log-action log-{{action}}">{{action}}</span></td>
+            <td>{{entity}}</td>
+            <td>{{entityId}}</td>
+            <td>{{details}}</td>
+            <td>{{formatDate createdAt}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      {{#if (gt page 1)}}<a href="/admin/logs?page={{add page -1}}" class="page-btn">← Назад</a>{{/if}}
+      <span class="page-info">Стор. {{page}} з {{pages}}</span>
+      {{#if (lt page pages)}}<a href="/admin/logs?page={{add page 1}}" class="page-btn">Вперед →</a>{{/if}}
+    </div>
+  </main>
+</div>
+{{> footer}}
+<script src="/js/app.js"></script>
+</body>
+</html>

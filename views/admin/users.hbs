@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+{{> navbar}}
+<div class="admin-layout">
+  {{> admin-sidebar}}
+  <main class="admin-main">
+    <h1>👥 Управління користувачами</h1>
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr><th>ID</th><th>Нікнейм</th><th>Email</th><th>Роль</th><th>Дата реєстрації</th><th>Дії</th></tr>
+        </thead>
+        <tbody>
+          {{#each users}}
+          <tr>
+            <td>{{id}}</td>
+            <td>{{username}}</td>
+            <td>{{email}}</td>
+            <td><span class="role-badge role-{{role}}">{{role}}</span></td>
+            <td>{{formatDate createdAt}}</td>
+            <td class="actions-cell">
+              <form action="/admin/users/{{id}}/role" method="POST" style="display:inline-flex;gap:0.25rem">
+                <select name="role" class="select-sm">
+                  <option value="USER" {{#if (eq role "USER")}}selected{{/if}}>USER</option>
+                  <option value="ADMIN" {{#if (eq role "ADMIN")}}selected{{/if}}>ADMIN</option>
+                </select>
+                <button type="submit" class="btn-sm btn-primary">Зберегти</button>
+              </form>
+              <form action="/admin/users/{{id}}/delete" method="POST" style="display:inline" onsubmit="return confirm('Видалити користувача?')">
+                <button type="submit" class="btn-sm btn-danger">Видалити</button>
+              </form>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+{{> footer}}
+<script src="/js/app.js"></script>
+</body>
+</html>

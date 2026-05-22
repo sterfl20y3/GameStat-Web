@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+{{> navbar}}
+<div class="admin-layout">
+  {{> admin-sidebar}}
+  <main class="admin-main">
+    <h1>📊 Мета-статистика</h1>
+
+    <!-- Create form -->
+    <div class="table-card" style="margin-bottom:1.5rem">
+      <h2>➕ Додати запис</h2>
+      <form action="/admin/meta" method="POST" class="crud-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Назва</label>
+            <input type="text" name="entityName" required class="form-input" placeholder="IS-7">
+          </div>
+          <div class="form-group">
+            <label>Тип</label>
+            <select name="entityType" class="form-input">
+              <option value="tank">Танк</option>
+              <option value="hero">Герой</option>
+              <option value="weapon">Зброя</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Winrate %</label>
+            <input type="number" name="winrate" step="0.1" min="0" max="100" class="form-input" placeholder="52.5">
+          </div>
+          <div class="form-group">
+            <label>Популярність %</label>
+            <input type="number" name="popularity" step="0.1" min="0" max="100" class="form-input" placeholder="7.5">
+          </div>
+          <div class="form-group">
+            <label>Avg Damage</label>
+            <input type="number" name="avgDamage" class="form-input" placeholder="2000">
+          </div>
+          <div class="form-group">
+            <label>Регіон</label>
+            <input type="text" name="region" class="form-input" value="global">
+          </div>
+        </div>
+        <button type="submit" class="btn-primary">Додати</button>
+      </form>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr><th>ID</th><th>Назва</th><th>Тип</th><th>WR%</th><th>Pop%</th><th>DMG</th><th>Регіон</th><th>Дії</th></tr>
+        </thead>
+        <tbody>
+          {{#each stats}}
+          <tr>
+            <td>{{id}}</td>
+            <td>{{entityName}}</td>
+            <td>{{entityType}}</td>
+            <td>{{toFixed winrate 1}}%</td>
+            <td>{{toFixed popularity 1}}%</td>
+            <td>{{toFixed avgDamage 0}}</td>
+            <td>{{region}}</td>
+            <td class="actions-cell">
+              <button class="btn-sm btn-primary" onclick="openEditModal({{id}}, '{{entityName}}', '{{entityType}}', {{winrate}}, {{popularity}}, {{avgDamage}})">Редагувати</button>
+              <form action="/admin/meta/{{id}}/delete" method="POST" style="display:inline" onsubmit="return confirm('Видалити?')">
+                <button type="submit" class="btn-sm btn-danger">Видалити</button>
+              </form>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>✏️ Редагувати запис</h3>
+      <button onclick="closeModal()" class="modal-close">✕</button>
+    </div>
+    <form id="editForm" method="POST" class="crud-form">
+      <input type="hidden" name="_method" value="PUT">
+      <div class="form-row">
+        <div class="form-group"><label>Назва</label><input type="text" id="edit-name" name="entityName" class="form-input" required></div>
+        <div class="form-group"><label>Тип</label>
+          <select id="edit-type" name="entityType" class="form-input">
+            <option value="tank">Танк</option>
+            <option value="hero">Герой</option>
+            <option value="weapon">Зброя</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Winrate %</label><input type="number" id="edit-wr" name="winrate" step="0.1" class="form-input"></div>
+        <div class="form-group"><label>Популярність %</label><input type="number" id="edit-pop" name="popularity" step="0.1" class="form-input"></div>
+        <div class="form-group"><label>Avg Damage</label><input type="number" id="edit-dmg" name="avgDamage" class="form-input"></div>
+      </div>
+      <button type="submit" class="btn-primary">Зберегти</button>
+    </form>
+  </div>
+</div>
+
+{{> footer}}
+<script>
+function openEditModal(id, name, type, wr, pop, dmg) {
+  document.getElementById('edit-name').value = name;
+  document.getElementById('edit-type').value = type;
+  document.getElementById('edit-wr').value = wr;
+  document.getElementById('edit-pop').value = pop;
+  document.getElementById('edit-dmg').value = dmg;
+  document.getElementById('editForm').action = `/admin/meta/${id}/update`;
+  document.getElementById('editModal').style.display = 'flex';
+}
+function closeModal() { document.getElementById('editModal').style.display = 'none'; }
+window.onclick = e => { if(e.target === document.getElementById('editModal')) closeModal(); }
+</script>
+<script src="/js/app.js"></script>
+</body>
+</html>

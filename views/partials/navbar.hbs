@@ -1,0 +1,39 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="/" class="nav-brand">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-text">GameStat</span>
+    </a>
+
+    <form class="nav-search" action="/players/search" method="GET">
+      <input type="text" name="q" placeholder="Пошук гравця..." class="search-input" autocomplete="off">
+      <select name="region" class="search-region">
+        <option value="eu">EU</option>
+        <option value="na">NA</option>
+        <option value="asia">ASIA</option>
+      </select>
+      <button type="submit" class="search-btn">🔍</button>
+    </form>
+
+    <ul class="nav-links">
+      <li><a href="/leaderboard">🏆 Рейтинг</a></li>
+      <li><a href="/meta">📊 Мета</a></li>
+      {{#if user}}
+        <li><a href="/dashboard">👤 Кабінет</a></li>
+        {{#if (eq user.role "ADMIN")}}
+          <li><a href="/admin" class="admin-link">⚙️ Адмін</a></li>
+        {{/if}}
+        <li>
+          <form action="/auth/logout" method="POST" style="display:inline">
+            <button type="submit" class="btn-logout">Вийти</button>
+          </form>
+        </li>
+      {{else}}
+        <li><a href="/auth/login" class="btn-nav-login">Увійти</a></li>
+        <li><a href="/auth/register" class="btn-nav-reg">Реєстрація</a></li>
+      {{/if}}
+    </ul>
+
+    <button class="nav-toggle" onclick="toggleNav()">☰</button>
+  </div>
+</nav>

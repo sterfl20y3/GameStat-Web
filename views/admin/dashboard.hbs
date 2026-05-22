@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+{{> navbar}}
+<div class="admin-layout">
+  {{> admin-sidebar}}
+  <main class="admin-main">
+    <h1>⚙️ Адмін-панель</h1>
+
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">👥</div>
+        <div class="admin-stat-val">{{stats.users}}</div>
+        <div class="admin-stat-label">Користувачів</div>
+        <a href="/admin/users" class="admin-stat-link">Управляти →</a>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">🎮</div>
+        <div class="admin-stat-val">{{stats.players}}</div>
+        <div class="admin-stat-label">Гравців (кеш)</div>
+        <a href="/admin/players" class="admin-stat-link">Управляти →</a>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">⚔️</div>
+        <div class="admin-stat-val">{{stats.matches}}</div>
+        <div class="admin-stat-label">Матчів</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">📋</div>
+        <div class="admin-stat-val">{{stats.logs}}</div>
+        <div class="admin-stat-label">Логів</div>
+        <a href="/admin/logs" class="admin-stat-link">Переглянути →</a>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h2>📋 Остання активність</h2>
+      <table class="data-table">
+        <thead><tr><th>Дія</th><th>Сутність</th><th>ID</th><th>Деталі</th><th>Час</th></tr></thead>
+        <tbody>
+          {{#each logs}}
+          <tr>
+            <td><span class="log-action log-{{action}}">{{action}}</span></td>
+            <td>{{entity}}</td>
+            <td>{{entityId}}</td>
+            <td>{{details}}</td>
+            <td>{{timeAgo createdAt}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <a href="/admin/logs" class="btn-outline" style="margin-top:1rem;display:inline-block">Всі логи →</a>
+    </div>
+  </main>
+</div>
+{{> footer}}
+<script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+{{> navbar}}
+<div class="admin-layout">
+  {{> admin-sidebar}}
+  <main class="admin-main">
+    <h1>🎮 Кешовані гравці <span class="count-badge">{{total}}</span></h1>
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr><th>ID</th><th>Нікнейм</th><th>Регіон</th><th>Клан</th><th>WN8</th><th>Winrate</th><th>Бої</th><th>Оновлено</th><th>Дії</th></tr>
+        </thead>
+        <tbody>
+          {{#each players}}
+          <tr>
+            <td>{{id}}</td>
+            <td><a href="/players/{{id}}" class="link-player">{{nickname}}</a></td>
+            <td>{{regionFlag region}} {{region}}</td>
+            <td>{{#if clanTag}}{{clanTag}}{{else}}—{{/if}}</td>
+            {{#if stats.[0]}}
+            <td style="color:{{wn8Color stats.[0].wn8}}">{{toFixed stats.[0].wn8 0}}</td>
+            <td>{{toFixed stats.[0].winrate 1}}%</td>
+            <td>{{stats.[0].battles}}</td>
+            {{else}}<td>—</td><td>—</td><td>—</td>{{/if}}
+            <td>{{timeAgo updatedAt}}</td>
+            <td>
+              <form action="/admin/players/{{id}}/delete" method="POST" onsubmit="return confirm('Видалити з кешу?')">
+                <button type="submit" class="btn-sm btn-danger">Видалити</button>
+              </form>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    <!-- Pagination -->
+    <div class="pagination">
+      {{#if (gt page 1)}}<a href="/admin/players?page={{add page -1}}" class="page-btn">← Назад</a>{{/if}}
+      <span class="page-info">Стор. {{page}} з {{pages}}</span>
+      {{#if (lt page pages)}}<a href="/admin/players?page={{add page 1}}" class="page-btn">Вперед →</a>{{/if}}
+    </div>
+  </main>
+</div>
+{{> footer}}
+<script src="/js/app.js"></script>
+</body>
+</html>

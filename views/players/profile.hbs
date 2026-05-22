@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+{{> navbar}}
+<main class="container" style="padding-top:2rem">
+
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="profile-avatar-wrap">
+      <div class="profile-avatar">{{substring player.nickname 0 2}}</div>
+      {{#if player.clanTag}}
+      <div class="profile-clan-badge">{{player.clanTag}}</div>
+      {{/if}}
+    </div>
+    <div class="profile-meta">
+      <h1 class="profile-name">{{player.nickname}}</h1>
+      <div class="profile-badges">
+        <span class="badge badge-region">{{regionFlag player.region}} {{player.region}}</span>
+        {{#if player.clanName}}<span class="badge badge-clan">🛡️ {{player.clanName}}</span>{{/if}}
+        {{#if latestStats}}
+        <span class="badge" style="background:{{wn8Color latestStats.wn8}}22;color:{{wn8Color latestStats.wn8}};border:1px solid {{wn8Color latestStats.wn8}}">
+          {{wn8Label latestStats.wn8}}
+        </span>
+        {{/if}}
+      </div>
+      <p class="profile-updated">Оновлено: {{formatDate player.updatedAt}}</p>
+    </div>
+    <div class="profile-actions">
+      {{#if user}}
+        {{#if isFavorite}}
+        <form action="/dashboard/unfavorite/{{player.id}}" method="POST">
+          <button type="submit" class="btn-outline btn-fav active">⭐ В обраному</button>
+        </form>
+        {{else}}
+        <form action="/dashboard/favorite/{{player.id}}" method="POST">
+          <button type="submit" class="btn-outline btn-fav">☆ Додати в обране</button>
+        </form>
+        {{/if}}
+      {{/if}}
+      <a href="/players/search?q={{player.nickname}}&region={{player.region}}" class="btn-outline">🔄 Оновити</a>
+    </div>
+  </div>
+
+  {{#if latestStats}}
+  <!-- Main Stats -->
+  <div class="stats-cards">
+    <div class="stat-card stat-card--wn8" style="border-color:{{wn8Color latestStats.wn8}}">
+      <div class="stat-card-value" style="color:{{wn8Color latestStats.wn8}}">{{toFixed latestStats.wn8 0}}</div>
+      <div class="stat-card-label">WN8</div>
+      <div class="stat-card-sub" style="color:{{wn8Color latestStats.wn8}}">{{wn8Label latestStats.wn8}}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-value">{{toFixed latestStats.winrate 2}}%</div>
+      <div class="stat-card-label">Перемоги</div>
+      <div class="stat-card-sub">{{latestStats.wins}} / {{latestStats.battles}}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-value">{{toFixed latestStats.avgDamage 0}}</div>
+      <div class="stat-card-label">Сер. Дамаг</div>
+      <div class="stat-card-sub">за бій</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-value">{{latestStats.battles}}</div>
+      <div class="stat-card-label">Бої</div>
+      <div class="stat-card-sub">всього</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-value">{{toFixed latestStats.avgXp 0}}</div>
+      <div class="stat-card-label">Сер. XP</div>
+      <div class="stat-card-sub">за бій</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-value">{{toFixed latestStats.survivalRate 1}}%</div>
+      <div class="stat-card-label">Виживаємість</div>
+      <div class="stat-card-sub">боїв вижив</div>
+    </div>
+  </div>
+  {{/if}}
+
+  <!-- Charts -->
+  <div class="charts-section">
+    <div class="chart-card">
+      <h3>📈 Winrate / WN8 динаміка</h3>
+      <canvas id="wn8Chart" height="120"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>💥 Середній дамаг</h3>
+      <canvas id="dmgChart" height="120"></canvas>
+    </div>
+  </div>
+
+  <!-- Recent Matches -->
+  {{#if matches.length}}
+  <div class="section-card">
+    <h2>⚔️ Останні бої</h2>
+    <div class="matches-table-wrap">
+      <table class="matches-table">
+        <thead>
+          <tr>
+            <th>Танк</th>
+            <th>Результат</th>
+            <th>Дамаг</th>
+            <th>XP</th>
+            <th>Фраги</th>
+            <th>Вижив</th>
+            <th>Час</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each matches}}
+          <tr class="match-row match-{{result}}">
+            <td class="match-tank">🛡️ {{tankName}}</td>
+            <td class="match-result">
+              {{#if (eq result "win")}}<span class="badge-win">✓ Перемога</span>{{/if}}
+              {{#if (eq result "loss")}}<span class="badge-loss">✗ Поразка</span>{{/if}}
+              {{#if (eq result "draw")}}<span class="badge-draw">= Нічия</span>{{/if}}
+            </td>
+            <td>{{damage}}</td>
+            <td>{{xp}}</td>
+            <td>{{kills}}</td>
+            <td>{{#if survived}}✅{{else}}💀{{/if}}</td>
+            <td class="match-time">{{timeAgo playedAt}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {{/if}}
+
+</main>
+{{> footer}}
+<script>
+const rawData = {{{chartData}}};
+const labels = rawData.map((d,i) => `Snapshot ${i+1}`);
+
+const wn8Ctx = document.getElementById('wn8Chart').getContext('2d');
+new Chart(wn8Ctx, {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [
+      { label: 'WN8', data: rawData.map(d => d.wn8), borderColor: '#7c3aed', backgroundColor: 'rgba(124,58,237,0.1)', tension: 0.4, fill: true },
+      { label: 'Winrate %', data: rawData.map(d => d.winrate), borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', tension: 0.4, fill: true, yAxisID: 'y2' }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#cbd5e1' } } },
+    scales: {
+      x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+      y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+      y2: { position: 'right', ticks: { color: '#94a3b8' }, grid: { display: false } }
+    }
+  }
+});
+
+const dmgCtx = document.getElementById('dmgChart').getContext('2d');
+new Chart(dmgCtx, {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [{ label: 'Avg Damage', data: rawData.map(d => d.avgDamage), backgroundColor: 'rgba(239,68,68,0.7)', borderColor: '#ef4444', borderWidth: 1 }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#cbd5e1' } } },
+    scales: {
+      x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+      y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+    }
+  }
+});
+</script>
+<script src="/js/app.js"></script>
+</body>
+</html>

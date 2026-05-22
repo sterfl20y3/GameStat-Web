@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+{{> navbar}}
+<main class="container" style="padding-top:2rem">
+  <h1>🎮 Всі гравці <span class="count-badge">{{total}}</span></h1>
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr><th>#</th><th>Нікнейм</th><th>Регіон</th><th>Клан</th><th>WN8</th><th>Winrate</th><th>Бої</th><th>Дії</th></tr>
+      </thead>
+      <tbody>
+        {{#each players}}
+        <tr>
+          <td>{{add @index 1}}</td>
+          <td><a href="/players/{{id}}" class="link-player">{{nickname}}</a></td>
+          <td>{{regionFlag region}} {{region}}</td>
+          <td>{{#if clanTag}}<span class="clan-tag">{{clanTag}}</span>{{else}}—{{/if}}</td>
+          {{#if stats.[0]}}
+          <td style="color:{{wn8Color stats.[0].wn8}}"><strong>{{toFixed stats.[0].wn8 0}}</strong></td>
+          <td>{{toFixed stats.[0].winrate 1}}%</td>
+          <td>{{stats.[0].battles}}</td>
+          {{else}}
+          <td>—</td><td>—</td><td>—</td>
+          {{/if}}
+          <td><a href="/players/{{id}}" class="btn-sm">Профіль</a></td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{> partials/pagination page=page pages=pages baseUrl="/players"}}
+</main>
+{{> footer}}
+<script src="/js/app.js"></script>
+</body>
+</html>
